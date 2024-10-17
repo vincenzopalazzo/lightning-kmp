@@ -143,7 +143,7 @@ data class PayInvoice(override val paymentId: UUID, override val amount: MilliSa
     val paymentHash: ByteVector32 = paymentDetails.paymentHash
     val recipient: PublicKey = paymentDetails.paymentRequest.nodeId
 }
-data class PayOffer(override val paymentId: UUID, val payerKey: PrivateKey, val payerNote: String?, override val amount: MilliSatoshi, val offer: OfferTypes.Offer, val fetchInvoiceTimeout: Duration, val trampolineFeesOverride: List<TrampolineFees>? = null) : SendPayment()
+data class PayOffer(override val paymentId: UUID, val payerKey: PrivateKey, val payerNote: String?, override val amount: MilliSatoshi, val offer: OfferTypes.Offer, val contactSecret: ByteVector32?, val fetchInvoiceTimeout: Duration, val trampolineFeesOverride: List<TrampolineFees>? = null) : SendPayment()
 // @formatter:on
 
 data class PurgeExpiredPayments(val fromCreatedAt: Long, val toCreatedAt: Long) : PaymentCommand()
@@ -819,10 +819,13 @@ class Peer(
             .first { it.request.paymentId == paymentId }
     }
 
-    suspend fun payOffer(amount: MilliSatoshi, offer: OfferTypes.Offer, payerKey: PrivateKey, payerNote: String?, fetchInvoiceTimeout: Duration, trampolineFeesOverride: List<TrampolineFees>? = null): SendPaymentResult {
+    /**
+     * @param contactSecret should only be provided if we'd like to reveal our identity to our contact.
+     */
+    suspend fun payOffer(amount: MilliSatoshi, offer: OfferTypes.Offer, payerKey: PrivateKey, payerNote: String?, contactSecret: ByteVector32?, fetchInvoiceTimeout: Duration, trampolineFeesOverride: List<TrampolineFees>? = null): SendPaymentResult {
         val paymentId = UUID.randomUUID()
         return eventsFlow
-            .onSubscription { send(PayOffer(paymentId, payerKey, payerNote, amount, offer, fetchInvoiceTimeout, trampolineFeesOverride)) }
+            .onSubscription { send(PayOffer(paymentId, payerKey, payerNote, amount, offer, contactSecret, fetchInvoiceTimeout, trampolineFeesOverride)) }
             .filterIsInstance<SendPaymentResult>()
             .first { it.request.paymentId == paymentId }
     }

@@ -132,7 +132,7 @@ class PeerTest : LightningTestSuite() {
         val trampolineFeesOverride = listOf(TrampolineFees(2.sat, 500, CltvExpiryDelta(576)))
         val offer = TestConstants.Alice.nodeParams.randomOffer(TestConstants.Alice.nodeParams.nodeId, 100_000.msat, "test offer").offer
 
-        val result = peer.payOffer(100_000.msat, offer, randomKey(), null, 1.seconds, trampolineFeesOverride)
+        val result = peer.payOffer(100_000.msat, offer, randomKey(), null, null, 1.seconds, trampolineFeesOverride)
 
         val failure = assertIs<OfferNotPaid>(result)
         assertEquals(trampolineFeesOverride, failure.request.trampolineFeesOverride)
