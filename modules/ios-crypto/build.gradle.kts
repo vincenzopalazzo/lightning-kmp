@@ -4,7 +4,7 @@
 mapOf(
     "Iphoneos" to listOf("-sdk", "iphoneos"),
     "Iphonesimulator" to listOf("-sdk", "iphonesimulator"),
-    "Macosx" to listOf("-sdk", "macosx", "MACOSX_DEPLOYMENT_TARGET=11.0", "CONFIGURATION_BUILD_DIR=$projectDir/build/Release-macosx"),
+    "Macosx" to listOf("-sdk", "macosx", "MACOSX_DEPLOYMENT_TARGET=12.0", "CONFIGURATION_BUILD_DIR=$projectDir/build/Release-macosx"),
 ).forEach { (label, sdkArgs) ->
     tasks.create<Exec>("buildCrypto$label") {
         group = "build"
