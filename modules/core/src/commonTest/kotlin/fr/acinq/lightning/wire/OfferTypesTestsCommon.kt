@@ -344,11 +344,11 @@ class OfferTypesTestsCommon : LightningTestSuite() {
             assertFalse(invoiceRequest.isValid())
         }
         run {
-            // Missing payer address signature.
+            // Missing payer address signature: bLIP 42 requires ignoring the invoice_request.
             val signature = signSchnorr(InvoiceRequest.signatureTag, rootHash(TlvStream(tlvsWithoutSignature)), payerKey)
             val tlvs = tlvsWithoutSignature + Signature(signature)
             val invoiceRequest = InvoiceRequest(TlvStream(tlvs))
-            assertTrue(invoiceRequest.isValid())
+            assertFalse(invoiceRequest.isValid())
             assertNull(invoiceRequest.payerAddress)
         }
     }

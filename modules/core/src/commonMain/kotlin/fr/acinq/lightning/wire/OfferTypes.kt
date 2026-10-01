@@ -979,7 +979,8 @@ object OfferTypes {
                     checkSignature()
 
         private fun checkPayerAddressSignature(): Boolean = when (val ps = records.get<InvoiceRequestPayerAddressSignature>()) {
-            null -> true
+            // bLIP 42: if invreq_payer_bip_353_name is provided, the invoice_request must be ignored when the signature is missing.
+            null -> records.get<InvoiceRequestPayerAddress>() == null
             else -> {
                 // The payer address signature covers the invoice request without its top-level signature.
                 // Note that the standard invoice request signature includes the InvoiceRequestPayerAddressSignature field.
